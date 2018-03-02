@@ -9,12 +9,17 @@
     "url": "https://gitlab.com/siddharatha/sfdx-bfo/issues"
   },
   "scripts": {},
-  "keywords": ["bFO", "Cleanup", "Profiles"],
+  "keywords": [
+    "bFO",
+    "Cleanup",
+    "Profiles"
+  ],
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.5.1",
     "fs-extra": "^5.0.0",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.19",
+    "xmlsplit": "^1.2.8"
   },
   "devDependencies": {}
 }

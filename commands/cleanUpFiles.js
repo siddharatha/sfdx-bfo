@@ -2,6 +2,8 @@ const Promise = require("bluebird");
 const path = require("path");
 const fs = require("fs-extra");
 const xlm2js = require("xml2js");
+const XmlSplit = require("xmlsplit");
+var xmlsplit = new XmlSplit();
 
 const promisefs = Promise.promisifyAll(fs);
 
@@ -39,7 +41,7 @@ const promisefs = Promise.promisifyAll(fs);
         promisefs
           .readdirAsync(completesrcpath)
           .then(filelist => {
-            return Promise.map(
+            Promise.map(
               filelist,
               eachfilename => {
                 return readXMLFile(
@@ -61,16 +63,11 @@ const promisefs = Promise.promisifyAll(fs);
 function readXMLFile(srcfilename, targetfilename) {
   return new Promise((resolve, reject) => {
     if (fs.existsSync(srcfilename)) {
-      var parser = Promise.promisifyAll(new xlm2js.Parser());
-      return promisefs
-        .readFileAsync(srcfilename)
-        .then(data => parser.parseStringAsync(data))
-        .then(parseddata =>
-          promisefs.writeFileAsync(
-            `${targetfilename}.json`,
-            JSON.stringify(parseddata, null, 2)
-          )
-        );
+      var inputStream = fs.createReadStream(srcfilename);
+      inputStream.pipe(xmlsplit).on("data", function(data) {
+        var xmlDocument = data.toString();
+        console.log(xmlDocument);
+      });
     } else {
       reject(`${srcfilename} doesn't exist`);
     }
