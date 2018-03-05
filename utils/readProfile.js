@@ -6,7 +6,7 @@ const xml2js = require("xml2js");
 
 function readProfile(fileName, targetFolder) {
   return new Promise((resolve, reject) => {
-    console.time(`processing profile file ${fileName}`);
+    console.log(`processing profile file ${fileName}`);
     const filedata = fs.readFileSync(fileName);
     var parser = new xml2js.Parser();
     parser.parseString(filedata, function(err, result) {
@@ -74,58 +74,35 @@ function readProfile(fileName, targetFolder) {
           _.each(dataofkey, eachdata => {
             filename = _.get(eachdata, eachSubFolder.fileNamekey);
             const finalfilename =
-              corerefroot + "/" + eachSubFolder.folderName + "/" + filename;
-            if (eachSubFolder.booleanvars.length === 1) {
-              var booleanvar = _.first(eachSubFolder.booleanvars);
-              var returnresult = theBooleanValue(
-                _.first(_.get(eachdata, booleanvar))
-              );
-              if (returnresult) {
-                fs.ensureFileSync(finalfilename);
-                var builder = new xml2js.Builder({
-                  rootName: eachSubFolder.folderName,
-                  xmldec: {
-                    version: "1.0",
-                    encoding: "UTF-8"
-                  }
-                });
-                x = _.assign(
-                  {
-                    $: {
-                      xmlns: "http://soap.sforce.com/2006/04/metadata"
-                    }
-                  },
-                  eachdata
-                );
-
-                var xml = builder.buildObject(x);
-                fs.writeFileSync(finalfilename, xml);
+              corerefroot +
+              "/" +
+              eachSubFolder.folderName +
+              "/" +
+              filename +
+              ".xml";
+            fs.ensureFileSync(finalfilename);
+            var builder = new xml2js.Builder({
+              rootName: eachSubFolder.folderName,
+              xmldec: {
+                version: "1.0",
+                encoding: "UTF-8"
               }
-            } else {
-              fs.ensureFileSync(finalfilename);
-              var builder = new xml2js.Builder({
-                rootName: eachSubFolder.folderName,
-                xmldec: {
-                  version: "1.0",
-                  encoding: "UTF-8"
+            });
+            x = _.assign(
+              {
+                $: {
+                  xmlns: "http://soap.sforce.com/2006/04/metadata"
                 }
-              });
-              x = _.assign(
-                {
-                  $: {
-                    xmlns: "http://soap.sforce.com/2006/04/metadata"
-                  }
-                },
-                eachdata
-              );
+              },
+              eachdata
+            );
 
-              var xml = builder.buildObject(x);
-              fs.writeFileSync(finalfilename, xml);
-            }
+            var xml = builder.buildObject(x);
+            fs.writeFileSync(finalfilename, xml);
           });
         });
       });
-      console.timeEnd(`Finished processing profile file ${fileName}`);
+      console.log(`Finished processing profile file ${fileName}`);
       resolve();
     });
   });
