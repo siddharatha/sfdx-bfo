@@ -6,7 +6,7 @@ const xml2js = require("xml2js");
 
 function readProfile(fileName, targetFolder) {
   return new Promise((resolve, reject) => {
-    console.log(`processing profile file ${fileName}`);
+    console.log(`processing file ${fileName}`);
     const filedata = fs.readFileSync(fileName);
     var parser = new xml2js.Parser();
     parser.parseString(filedata, function(err, result) {
@@ -41,6 +41,15 @@ function readProfile(fileName, targetFolder) {
               folderStructure.subfolders.push({
                 folderName: eachKey,
                 fileNamekey: _.first(filenamevar),
+                booleanvars: booleanvars
+              });
+            } else if (
+              _.isArray(filenamevar) &&
+              _.find(filenamevar, eachfilename => eachfilename === "fullName")
+            ) {
+              folderStructure.subfolders.push({
+                folderName: eachKey,
+                fileNamekey: "fullName",
                 booleanvars: booleanvars
               });
             } else {
@@ -102,7 +111,7 @@ function readProfile(fileName, targetFolder) {
           });
         });
       });
-      console.log(`Finished processing profile file ${fileName}`);
+      console.log(`Finished processing file ${fileName}`);
       resolve();
     });
   });
@@ -142,7 +151,7 @@ function theBooleanValue(data) {
   }
 }
 
-// readProfile("smallerset/profiles/Admin.profile", "test").then(() =>
+// readProfile("smallerset/CustomLabels.labels", "labelstemp").then(() =>
 //   console.log("test")
 // );
 
