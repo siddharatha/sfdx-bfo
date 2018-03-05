@@ -1,0 +1,1 @@
+function mergeFiles(srcfolder, targetfolder) {}
