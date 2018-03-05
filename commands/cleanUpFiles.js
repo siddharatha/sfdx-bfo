@@ -1,11 +1,12 @@
 const Promise = require("bluebird");
 const path = require("path");
 const fs = require("fs-extra");
-const xlm2js = require("xml2js");
-const XmlSplit = require("xmlsplit");
-var xmlsplit = new XmlSplit();
+const xml2js = require("xml2js");
+const _ = require('lodash');
+const readProfile = require('../readProfile');
 
 const promisefs = Promise.promisifyAll(fs);
+let count = 0;
 
 (function() {
   "use strict";
@@ -35,7 +36,7 @@ const promisefs = Promise.promisifyAll(fs);
       const srcfolder = context.flags.srcfolder;
       const targetfolder = context.flags.targetfolder;
       const completesrcpath = path.resolve(srcfolder);
-      const completetargetpath = path.resolve(targetfolder);
+      const completetargetpath = path.resolve(targetfolder);      
       if (fs.existsSync(completesrcpath)) {
         fs.ensureDirSync(completetargetpath);
         promisefs
@@ -44,9 +45,8 @@ const promisefs = Promise.promisifyAll(fs);
             Promise.map(
               filelist,
               eachfilename => {
-                return readXMLFile(
-                  `${completesrcpath}/${eachfilename}`,
-                  `${completetargetpath}/${eachfilename}`
+                return readProfile(
+                  completesrcpath+'/'+eachfilename,completetargetpath
                 );
               },
               { concurrency: 20 }
@@ -60,14 +60,26 @@ const promisefs = Promise.promisifyAll(fs);
   };
 })();
 
-function readXMLFile(srcfilename, targetfilename) {
-  return new Promise((resolve, reject) => {
-    if (fs.existsSync(srcfilename)) {
-      var inputStream = fs.createReadStream(srcfilename);
-      inputStream.pipe(xmlsplit).on("data", function(data) {
-        var xmlDocument = data.toString();
-        console.log(xmlDocument);
-      });
+function readXMLFile(srcpath,srcfilename,targetpath) {
+  return new Promise((resolve, reject) => {    
+    if (fs.existsSync(srcpath+'/'+srcfilename)) {
+      var parser = new xml2js.Parser({ explicitChildren: true, explicitArray:false});
+      promisefs.readFile(srcpath + '/' + srcfilename)
+        .then(filedata => {         
+          parser.parseString(filedata, function (err, result) { 
+            promisefs.writeFileAsync(targetpath+'/'+srcfilename, JSON.stringify(result, null, 2));
+            _.map(result, (value, key) => {                            
+              _.map(_.keysIn(value), eachKey => {
+                identify = _.first(value[eachKey]);
+                if (_.isObject(identify)) {
+                  console.log(eachKey, _.keys(identify))
+                }                
+              });
+            })          
+            // promisefs.writeFileAsync(targetfilename, JSON.stringify(filedata, null, 2))
+            // .then(()=>resolve())
+          });
+        });      
     } else {
       reject(`${srcfilename} doesn't exist`);
     }

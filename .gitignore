@@ -34,5 +34,6 @@ node_modules/
 mm.log
 bin
 profiles/
-temp/
+temp/*
+smallerset/
 
