@@ -1,7 +1,7 @@
 {
   "name": "sfdx-bfo",
   "version": "0.1.1",
-  "description": "Tools to clean up the existing bFO repo",
+  "description": "Tools to generate the profile folders close to dx format",
   "main": "index.js",
   "author": "Siddharatha Nagavarapu",
   "repository": "siddharatha/sfdx-bfo",
@@ -9,18 +9,13 @@
     "url": "https://gitlab.com/siddharatha/sfdx-bfo/issues"
   },
   "scripts": {},
-  "keywords": [
-    "bFO",
-    "Cleanup",
-    "Profiles"
-  ],
+  "keywords": ["bFO", "Cleanup", "Profiles"],
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.5.1",
     "fs-extra": "^5.0.0",
     "lodash": "^4.17.5",
-    "xml2js": "^0.4.19",
-    "xmlsplit": "^1.2.8"
+    "xml2js": "^0.4.19"
   },
   "devDependencies": {}
 }
