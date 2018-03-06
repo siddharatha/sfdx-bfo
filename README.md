@@ -16,4 +16,14 @@ sfdx plugins install sfdx-bfo
 
 # run the plugin
 
-sfdx bfo:cleanup -s yourfolderwitholdformat -t targetfolderfornewformat
+## Split files into a folder
+
+sfdx bfo:split -s yourfolderwitholdformat -t targetfolderfornewformat
+
+## Merge files into a folder
+
+sfdx bfo:merge -s yourfolderwithsplitfiles -t targetfolderformergefiles
+
+## doctor
+
+specifies the state of your repo

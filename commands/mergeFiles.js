@@ -3,10 +3,10 @@ const path = require("path");
 const fs = require("fs-extra");
 const xml2js = require("xml2js");
 const _ = require("lodash");
+const klawSync = require("klaw-sync");
 const mergeFile = require("../utils/mergeFile");
 
 const promisefs = Promise.promisifyAll(fs);
-let count = 0;
 
 (function() {
   "use strict";
@@ -45,7 +45,7 @@ let count = 0;
             Promise.map(
               filelist,
               eachfilename => {
-                return readProfile(
+                return mergeFile(
                   completesrcpath + "/" + eachfilename,
                   completetargetpath
                 );

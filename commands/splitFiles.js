@@ -4,9 +4,9 @@ const fs = require("fs-extra");
 const xml2js = require("xml2js");
 const _ = require("lodash");
 const splitFile = require("../utils/splitFile");
+const klawSync = require("klaw-sync");
 
 const promisefs = Promise.promisifyAll(fs);
-let count = 0;
 
 (function() {
   "use strict";
@@ -38,22 +38,28 @@ let count = 0;
       const completesrcpath = path.resolve(srcfolder);
       const completetargetpath = path.resolve(targetfolder);
       if (fs.existsSync(completesrcpath)) {
+        const paths = klawSync(srcfolder, {
+          nofile: true
+        });
+        const coredirs = _.map(paths, eachpath => eachpath.path);
         fs.ensureDirSync(completetargetpath);
-        promisefs
-          .readdirAsync(completesrcpath)
-          .then(filelist => {
-            Promise.map(
-              filelist,
-              eachfilename => {
-                return splitFile(
-                  completesrcpath + "/" + eachfilename,
-                  completetargetpath
-                );
-              },
-              { concurrency: 20 }
-            );
-          })
-          .catch(ex => console.log(ex));
+        _.each(coredirs, eachDir => {
+          promisefs
+            .readdirAsync(eachDir)
+            .then(filelist => {
+              Promise.map(
+                filelist,
+                eachfilename => {
+                  return splitFile(
+                    eachDir + "/" + eachfilename,
+                    completetargetpath
+                  );
+                },
+                { concurrency: 20 }
+              );
+            })
+            .catch(ex => console.log(ex));
+        });
       } else {
         console.log("source or target doesn't exist");
       }
