@@ -1,4 +1,5 @@
-const bfo = require("./commands/cleanUpFiles.js");
+const split = require("./commands/splitFiles.js");
+const merge = require("./commands/mergeFiles.js");
 
 (function() {
   "use strict";
@@ -6,9 +7,9 @@ const bfo = require("./commands/cleanUpFiles.js");
   exports.topics = [
     {
       name: "bfo",
-      description: "cleanup the profile and permission set files"
-    }
+      description: "All commands for bFO - split, merge"
+    }    
   ];
 
-  exports.commands = [bfo];
+  exports.commands = [split,merge];
 })();

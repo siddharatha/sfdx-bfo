@@ -1,1 +1,0 @@
-function mergeFiles(srcfolder, targetfolder) {}
