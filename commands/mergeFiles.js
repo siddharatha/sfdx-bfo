@@ -39,21 +39,34 @@ const promisefs = Promise.promisifyAll(fs);
       const completetargetpath = path.resolve(targetfolder);
       if (fs.existsSync(completesrcpath)) {
         fs.ensureDirSync(completetargetpath);
-        promisefs
-          .readdirAsync(completesrcpath)
-          .then(filelist => {
-            Promise.map(
-              filelist,
-              eachfilename => {
-                return mergeFile(
-                  completesrcpath + "/" + eachfilename,
-                  completetargetpath
-                );
-              },
-              { concurrency: 20 }
-            );
-          })
-          .catch(ex => console.log(ex));
+        const paths = klawSync(srcfolder, {
+          nofile: true
+        });
+        const coredirs = _.flatten(
+          _.filter(
+            _.map(paths, eachpath => eachpath.path),
+            eachPath => eachPath.indexOf(".") === -1
+          )
+        );
+        if (coredirs.length === 0) coredirs.push(srcfolder);
+        console.log(coredirs);
+        _.each(coredirs, eachDir => {
+          promisefs
+            .readdirAsync(eachDir)
+            .then(filelist => {
+              Promise.map(
+                filelist,
+                eachfilename => {
+                  return mergeFile(
+                    eachDir + "/" + eachfilename,
+                    completetargetpath
+                  );
+                },
+                { concurrency: 20 }
+              );
+            })
+            .catch(ex => console.log(ex));
+        });
       } else {
         console.log("source or target doesn't exist");
       }
