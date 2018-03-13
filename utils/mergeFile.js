@@ -33,6 +33,9 @@ function mergeFile(srcfolder, targetfolder) {
       thefirsttag = _.first(_.keysIn(rootnode));
       delete res[thefirsttag];
       finalres = _.assign(rootnode[thefirsttag], res);
+      finalres = _.assign(finalres, {
+        $: { xmlns: "http://soap.sforce.com/2006/04/metadata" }
+      });
       var builder = new xml2js.Builder({
         rootName: thefirsttag,
         xmldec: {
@@ -55,7 +58,13 @@ function parseIndivFile(eachFile, rootFolders) {
   return new Promise((resolve, reject) => {
     parser.parseString(fs.readFileSync(eachFile), (err, data) => {
       parser.reset();
-      _.omit(data, "$");
+      //data = _.omit(data, "$");
+      const mykey = _.first(_.keys(data));
+      const myvalue = _.omit(_.first(_.values(data)), "$");
+      data = {};
+      data[mykey] = myvalue;
+
+      // console.log(data);
       resolve(data);
     });
   });
