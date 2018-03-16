@@ -99,7 +99,7 @@ function processConfig(eachConfig) {
           trueconfig
         });
       },
-      { concurrency: 100 }
+      { concurrency: 1000 }
     )
       .then(v => resolve())
       .catch(e => reject());

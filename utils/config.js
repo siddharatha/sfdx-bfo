@@ -6,32 +6,32 @@ module.exports = {
         booleanTags: ["default", "visible"],
         allTags: ["application", "default", "visible"],
         oneFilePerTag: true,
-        fileName: "<%= nameTag %>.application",
-        fileFormat: "xml"
+        fileName: "<%= nameTag %>",
+        fileFormat: "json"
       },
       classAccesses: {
         nameTag: "apexClass",
         booleanTags: ["enabled"],
         allTags: ["apexClass", "enabled"],
-        oneFilePerTag: false,
-        fileName: "<%= nameTag %>s.classAccesses",
-        fileFormat: "xml"
+        oneFilePerTag: true,
+        fileName: "<%= nameTag %>",
+        fileFormat: "json"
       },
       customPermissions: {
         nameTag: "name",
         booleanTags: ["enabled"],
         allTags: ["enabled", "name"],
-        oneFilePerTag: false,
-        fileName: "<%= nameTag %>s.customPermissions",
-        fileFormat: "xml"
+        oneFilePerTag: true,
+        fileName: "<%= nameTag %>",
+        fileFormat: "json"
       },
       fieldPermissions: {
         nameTag: "field",
         booleanTags: ["editable", "readable"],
         allTags: ["editable", "field", "readable"],
         oneFilePerTag: true,
-        fileName: "<%= nameTag %>.fieldPermissions",
-        fileFormat: "xml"
+        fileName: "<%= nameTag %>",
+        fileFormat: "json"
       },
       objectPermissions: {
         nameTag: "object",
@@ -53,56 +53,56 @@ module.exports = {
           "viewAllRecords"
         ],
         oneFilePerTag: true,
-        fileName: "<%= nameTag %>.objectPermissions",
-        fileFormat: "xml"
+        fileName: "<%= nameTag %>",
+        fileFormat: "json"
       },
       pageAccesses: {
         nameTag: "apexPage",
         booleanTags: ["enabled"],
         allTags: ["apexPage", "enabled"],
-        oneFilePerTag: false,
-        fileName: "<%= nameTag %>s.pageAccesses",
-        fileFormat: "xml"
+        oneFilePerTag: true,
+        fileName: "<%= nameTag %>",
+        fileFormat: "json"
       },
       recordTypeVisibilities: {
         nameTag: "recordType",
         booleanTags: ["default", "visible"],
         allTags: ["default", "recordType", "visible"],
         oneFilePerTag: true,
-        fileName: "<%= nameTag %>.recordTypeVisibilities",
-        fileFormat: "xml"
+        fileName: "<%= nameTag %>",
+        fileFormat: "json"
       },
       tabVisibilities: {
         nameTag: "tab",
         booleanTags: ["visibility", "visible"],
         allTags: ["tab", "visibility"],
         oneFilePerTag: true,
-        fileName: "<%= nameTag %>.recordTypeVisibilities",
-        fileFormat: "xml"
+        fileName: "<%= nameTag %>",
+        fileFormat: "json"
       },
       userPermissions: {
         nameTag: "name",
         booleanTags: ["enabled"],
         allTags: ["enabled", "name"],
-        oneFilePerTag: false,
+        oneFilePerTag: true,
         fileName: "userPermissions",
-        fileFormat: "xml"
+        fileFormat: "json"
       },
       layoutAssignments: {
         nameTag: null,
         booleanTags: [],
         allTags: ["layout"],
-        oneFilePerTag: false,
+        oneFilePerTag: true,
         fileName: "layoutAssignments",
-        fileFormat: "xml"
+        fileFormat: "json"
       },
       loginIpRanges: {
         nameTag: null,
         booleanTags: [],
         allTags: ["endAddress", "startAddress"],
-        oneFilePerTag: false,
+        oneFilePerTag: true,
         fileName: "loginIpRanges",
-        fileFormat: "xml"
+        fileFormat: "json"
       }
     },
     metaTags: ["custom", "userLicense"],
@@ -122,8 +122,8 @@ module.exports = {
           "value"
         ],
         oneFilePerTag: true,
-        fileName: "<%= nameTag %>.label",
-        fileFormat: "xml"
+        fileName: "<%= nameTag %>",
+        fileFormat: "json"
       }
     },
     metaTags: [],
@@ -136,24 +136,24 @@ module.exports = {
         booleanTags: ["visible"],
         allTags: ["application", "visible"],
         oneFilePerTag: true,
-        fileName: "<%= nameTag %>.application",
-        fileFormat: "xml"
+        fileName: "<%= nameTag %>",
+        fileFormat: "json"
       },
       classAccesses: {
         nameTag: "apexClass",
         booleanTags: ["enabled"],
         allTags: ["apexClass", "enabled"],
-        oneFilePerTag: false,
-        fileName: "<%= nameTag %>s.classAccesses",
-        fileFormat: "xml"
+        oneFilePerTag: true,
+        fileName: "<%= nameTag %>",
+        fileFormat: "json"
       },
       fieldPermissions: {
         nameTag: "field",
         booleanTags: ["editable", "readable"],
         allTags: ["editable", "field", "readable"],
         oneFilePerTag: true,
-        fileName: "<%= nameTag %>.fieldPermissions",
-        fileFormat: "xml"
+        fileName: "<%= nameTag %>",
+        fileFormat: "json"
       },
       objectPermissions: {
         nameTag: "object",
@@ -175,40 +175,40 @@ module.exports = {
           "viewAllRecords"
         ],
         oneFilePerTag: true,
-        fileName: "<%= nameTag %>.objectPermissions",
-        fileFormat: "xml"
+        fileName: "<%= nameTag %>",
+        fileFormat: "json"
       },
       pageAccesses: {
         nameTag: "apexPage",
         booleanTags: ["enabled"],
         allTags: ["apexPage", "enabled"],
-        oneFilePerTag: false,
-        fileName: "<%= nameTag %>s.pageAccesses",
-        fileFormat: "xml"
+        oneFilePerTag: true,
+        fileName: "<%= nameTag %>",
+        fileFormat: "json"
       },
       recordTypeVisibilities: {
         nameTag: "recordType",
         booleanTags: ["visible"],
         allTags: ["recordType", "visible"],
         oneFilePerTag: true,
-        fileName: "<%= nameTag %>.recordTypeVisibilities",
-        fileFormat: "xml"
+        fileName: "<%= nameTag %>",
+        fileFormat: "json"
       },
       userPermissions: {
         nameTag: "name",
         booleanTags: ["enabled"],
         allTags: ["enabled", "name"],
-        oneFilePerTag: false,
+        oneFilePerTag: true,
         fileName: "userPermissions",
-        fileFormat: "xml"
+        fileFormat: "json"
       },
       tabSettings: {
         nameTag: "tab",
         booleanTags: ["visibility"],
         allTags: ["tab", "visibility"],
-        oneFilePerTag: false,
+        oneFilePerTag: true,
         fileName: "tabSettings",
-        fileFormat: "xml"
+        fileFormat: "json"
       }
     },
     metaTags: ["hasActivationRequired", "label", "license"],

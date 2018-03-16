@@ -8,6 +8,7 @@ function splitFile(fileName, targetFolder, config) {
   return new Promise((resolve, reject) => {
     const filedata = fs.readFileSync(fileName);
     var parser = new xml2js.Parser();
+    console.log("processing " + fileName);
     parser.parseString(filedata, function(err, result) {
       const root =
         path.resolve(targetFolder) +
@@ -42,7 +43,6 @@ function splitFile(fileName, targetFolder, config) {
           _.each(dataofkey, eachdata => {
             name = _.get(eachdata, configofkey.nameTag);
             filename = _.template(configofkey.fileName)({ nameTag: name });
-            // console.log(filename);
             var finalresult = false;
             _.each(configofkey.booleanTags, eachBooleanTag => {
               finalresult =
@@ -53,24 +53,47 @@ function splitFile(fileName, targetFolder, config) {
               const finalfilename = `${corerefroot}/${eachKey}/${filename}.${
                 configofkey.fileFormat
               }`;
-              fs.ensureFileSync(finalfilename);
-              var builder = new xml2js.Builder({
-                rootName: eachKey,
-                xmldec: {
-                  version: "1.0",
-                  encoding: "UTF-8"
-                }
-              });
-              x = _.assign(
-                {
-                  $: {
-                    xmlns: "http://soap.sforce.com/2006/04/metadata"
+              if (configofkey.fileFormat === "xml") {
+                fs.ensureFileSync(finalfilename);
+                var builder = new xml2js.Builder({
+                  rootName: eachKey,
+                  xmldec: {
+                    version: "1.0",
+                    encoding: "UTF-8"
                   }
-                },
-                eachdata
-              );
-              var xml = builder.buildObject(x);
-              fs.writeFileSync(finalfilename, xml);
+                });
+                x = _.assign(
+                  {
+                    $: {
+                      xmlns: "http://soap.sforce.com/2006/04/metadata"
+                    }
+                  },
+                  eachdata
+                );
+                var xml = builder.buildObject(x);
+                fs.writeFileSync(finalfilename, xml);
+              } else if (configofkey.fileFormat === "json") {
+                fs.ensureFileSync(finalfilename);
+                let tobeusedtags = [];
+                if (configofkey.booleanTags.length === 0) {
+                  //labels
+                  tobeusedtags = configofkey.allTags.filter(
+                    i => i !== configofkey.nameTag
+                  );
+                } else {
+                  tobeusedtags = configofkey.allTags.filter(
+                    i =>
+                      configofkey.booleanTags.indexOf(i) > -1 &&
+                      i !== configofkey.nameTag
+                  );
+                }
+                theobject = {};
+                _.each(tobeusedtags, eachtag => {
+                  theobject[eachtag] = _.first(_.get(eachdata, eachtag));
+                });
+                fs.writeJSONSync(finalfilename, theobject);
+                //fs.writeFileSync(finalfilename, JSON.stringify(theobject));
+              }
             }
           });
         });
@@ -113,119 +136,5 @@ function theBooleanValue(data) {
     }
   }
 }
-
-// splitFile(
-//   "/Users/Sid/Work/sfdx-bfo/profiles/Admin.profile",
-//   "/Users/Sid/Work/sfdx-bfo/",
-//   {
-//     tags: {
-//       applicationVisibilities: {
-//         nameTag: "application",
-//         booleanTags: ["default", "visible"],
-//         allTags: ["application", "default", "visible"],
-//         oneFilePerTag: true,
-//         fileName: "<%= nameTag %>.application",
-//         fileFormat: "xml"
-//       },
-//       classAccesses: {
-//         nameTag: "apexClass",
-//         booleanTags: ["enabled"],
-//         allTags: ["apexClass", "enabled"],
-//         oneFilePerTag: false,
-//         fileName: "<%= nameTag %>s.classAccesses",
-//         fileFormat: "json"
-//       },
-//       customPermissions: {
-//         nameTag: "name",
-//         booleanTags: ["enabled"],
-//         allTags: ["enabled", "name"],
-//         oneFilePerTag: false,
-//         fileName: "<%= nameTag %>s.customPermissions",
-//         fileFormat: "json"
-//       },
-//       fieldPermissions: {
-//         nameTag: "field",
-//         booleanTags: ["editable", "readable"],
-//         allTags: ["editable", "field", "readable"],
-//         oneFilePerTag: true,
-//         fileName: "<%= nameTag %>.fieldPermissions",
-//         fileFormat: "xml"
-//       },
-//       objectPermissions: {
-//         nameTag: "object",
-//         booleanTags: [
-//           "allowCreate",
-//           "allowDelete",
-//           "allowEdit",
-//           "allowRead",
-//           "modifyAllRecords",
-//           "viewAllRecords"
-//         ],
-//         allTags: [
-//           "allowCreate",
-//           "allowDelete",
-//           "allowEdit",
-//           "allowRead",
-//           "modifyAllRecords",
-//           "object",
-//           "viewAllRecords"
-//         ],
-//         oneFilePerTag: true,
-//         fileName: "<%= nameTag %>.objectPermissions",
-//         fileFormat: "xml"
-//       },
-//       pageAccesses: {
-//         nameTag: "apexPage",
-//         booleanTags: ["enabled"],
-//         allTags: ["apexPage", "enabled"],
-//         oneFilePerTag: false,
-//         fileName: "<%= nameTag %>s.pageAccesses",
-//         fileFormat: "json"
-//       },
-//       recordTypeVisibilities: {
-//         nameTag: "recordType",
-//         booleanTags: ["default", "visible"],
-//         allTags: ["default", "recordType", "visible"],
-//         oneFilePerTag: true,
-//         fileName: "<%= nameTag %>.recordTypeVisibilities",
-//         fileFormat: "xml"
-//       },
-//       tabVisibilities: {
-//         nameTag: "tab",
-//         booleanTags: ["visibility", "visible"],
-//         allTags: ["tab", "visibility"],
-//         oneFilePerTag: true,
-//         fileName: "<%= nameTag %>.recordTypeVisibilities",
-//         fileFormat: "xml"
-//       },
-//       userPermissions: {
-//         nameTag: "name",
-//         booleanTags: ["enabled"],
-//         allTags: ["enabled", "name"],
-//         oneFilePerTag: false,
-//         fileName: "userPermissions",
-//         fileFormat: "json"
-//       },
-//       layoutAssignments: {
-//         nameTag: null,
-//         booleanTags: [],
-//         allTags: ["layout"],
-//         oneFilePerTag: false,
-//         fileName: "layoutAssignments",
-//         fileFormat: "xml"
-//       },
-//       loginIpRanges: {
-//         nameTag: null,
-//         booleanTags: [],
-//         allTags: ["endAddress", "startAddress"],
-//         oneFilePerTag: false,
-//         fileName: "loginIpRanges",
-//         fileFormat: "xml"
-//       }
-//     },
-//     metaTags: ["custom", "userLicense"],
-//     files: "profiles/*.profile"
-//   }
-// ).then(() => console.log("test"));
 
 module.exports = splitFile;
