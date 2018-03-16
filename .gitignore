@@ -37,4 +37,5 @@ profiles/
 temp/*
 smallerset/
 splits/
-
+labels/
+permissionsets/

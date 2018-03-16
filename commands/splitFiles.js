@@ -5,9 +5,9 @@ const xml2js = require("xml2js");
 const _ = require("lodash");
 const splitFile = require("../utils/splitFile");
 const klawSync = require("klaw-sync");
-
+let config = require("../utils/config");
 const promisefs = Promise.promisifyAll(fs);
-
+const glob = require("glob");
 (function() {
   "use strict";
 
@@ -15,55 +15,101 @@ const promisefs = Promise.promisifyAll(fs);
     topic: "bfo",
     command: "split",
     description: "split files provided into target folder",
-    help: "bfo:split -s sourcefolder -t targetfolder",
+    help: "bfo:split -t targetfolder",
     flags: [
-      {
-        name: "srcfolder",
-        char: "s",
-        description: "source folder",
-        hasValue: true,
-        required: true
-      },
       {
         name: "targetfolder",
         char: "t",
         description: "target folder",
         hasValue: true,
-        required: true
+        required: false
+      },
+      {
+        name: "trueconfig",
+        char: "c",
+        description: "true config",
+        hasValue: true,
+        required: false
       }
     ],
     run(context) {
-      const srcfolder = context.flags.srcfolder;
-      const targetfolder = context.flags.targetfolder;
-      const completesrcpath = path.resolve(srcfolder);
-      const completetargetpath = path.resolve(targetfolder);
-      if (fs.existsSync(completesrcpath)) {
-        const paths = klawSync(srcfolder, {
-          nofile: true
-        });
-        const coredirs = _.map(paths, eachpath => eachpath.path);
-        fs.ensureDirSync(completetargetpath);
-        console.log(coredirs);
-        _.each(coredirs, eachDir => {
-          promisefs
-            .readdirAsync(eachDir)
-            .then(filelist => {
-              Promise.map(
-                filelist,
-                eachfilename => {
-                  return splitFile(
-                    eachDir + "/" + eachfilename,
-                    completetargetpath
-                  );
-                },
-                { concurrency: 1000 }
-              );
-            })
-            .catch(ex => console.log(ex));
-        });
-      } else {
-        console.log("source or target doesn't exist");
-      }
+      const { targetfolder, trueconfig } = context.flags;
+      prepareConfiguration().then(newconfig => {
+        Promise.map(_.values(newconfig), eachConfig => {
+          _.assign(eachConfig, { targetfolder }, { trueconfig });
+          return processConfig(eachConfig);
+        })
+          .then(r => console.log("finished"))
+          .catch(f => console.log("failed"));
+      });
     }
   };
 })();
+
+function getFileListFromPattern(pattern, key) {
+  return new Promise((resolve, reject) => {
+    glob(pattern, (err, matches) => {
+      resolve({ key, matches });
+    });
+  });
+}
+
+function prepareConfiguration() {
+  return new Promise((resolve, reject) => {
+    const updatedConfig = _.map(config, (value, key) => {
+      // console.log(value);
+      return {
+        files: value.files,
+        tags: value.tags,
+        metaTags: value.metaTags,
+        key: key
+      };
+    });
+    Promise.map(updatedConfig, eachConfig =>
+      getFileListFromPattern(eachConfig.files, eachConfig.key)
+    ).then(values => {
+      let filesWithType = _.mapValues(
+        _.mapKeys(
+          _.flatten(_.filter(_.values(_.map(_.groupBy(values, "key"))))),
+          "key"
+        ),
+        "matches"
+      );
+      let newconfig = {};
+      _.each(config, (value, key) => {
+        newconfig[key] = value;
+        newconfig[key].files = filesWithType[key];
+      });
+      // console.log(_.keysIn(newconfig));
+      resolve(newconfig);
+    });
+  });
+}
+
+function processConfig(eachConfig) {
+  return new Promise((resolve, reject) => {
+    Promise.map(
+      eachConfig.files,
+      eachFile => {
+        const { tags, metaTags, targetfolder, trueconfig } = eachConfig;
+        return processFile(eachFile, {
+          tags,
+          metaTags,
+          targetfolder,
+          trueconfig
+        });
+      },
+      { concurrency: 100 }
+    )
+      .then(v => resolve())
+      .catch(e => reject());
+  });
+}
+
+function processFile(eachfile, eachconfig) {
+  return new Promise((resolve, reject) => {
+    splitFile(eachfile, eachconfig.targetfolder, eachconfig).then(() =>
+      resolve()
+    );
+  });
+}

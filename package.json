@@ -1,8 +1,7 @@
 {
   "name": "sfdx-bfo",
   "version": "0.1.4",
-  "description":
-    "Tools to generate the profile and custom labelfolders close to dx format",
+  "description": "Tools to generate the profile and custom labelfolders close to dx format",
   "main": "index.js",
   "author": "Siddharatha Nagavarapu",
   "repository": "siddharatha/sfdx-bfo",
@@ -10,11 +9,16 @@
     "url": "https://gitlab.com/siddharatha/sfdx-bfo/issues"
   },
   "scripts": {},
-  "keywords": ["bFO", "Cleanup", "Profiles"],
+  "keywords": [
+    "bFO",
+    "Cleanup",
+    "Profiles"
+  ],
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.5.1",
     "fs-extra": "^5.0.0",
+    "glob": "^7.1.2",
     "inquirer": "^5.1.0",
     "klaw-sync": "^3.0.2",
     "lodash": "^4.17.5",
