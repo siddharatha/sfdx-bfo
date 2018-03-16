@@ -22,24 +22,29 @@ const promisefs = Promise.promisifyAll(fs);
         char: "r",
         description: "repo url",
         hasValue: true,
-        required: true
+        required: false
       },
       {
         name: "branch",
         char: "b",
         description: "branch name",
         hasValue: true,
-        required: true
+        required: false
       }
     ],
     run(context) {
       const remote = context.flags.repourl;
       const branch = context.flags.branch;
-      git()
-        .silent(true)
-        .clone(remote)
-        .then(() => console.log("finished"))
-        .catch(err => console.error("failed: ", err));
+      if (remote) {
+        git()
+          .silent(true)
+          .clone(remote)
+          .then(() => console.log("finished"))
+          .catch(err => console.error("failed: ", err));
+      }
+      else {
+        git().silent(false).pull(() => console.log('pulled'));
+      }
     }
   };
 })();

@@ -1,0 +1,313 @@
+{
+    "40": {
+        "profiles": {
+            "tags": {
+                "applicationVisibilities": {
+                    "nameTag": "application",
+                    "booleanTags": [
+                        "default",
+                        "visible"
+                    ],
+                    "allTags": [
+                        "application",
+                        "default",
+                        "visible"
+                    ],
+                    "oneFilePerTag": true,
+                    "fileName": "<%= nameTag %>.application",
+                    "fileFormat": "xml"
+                },
+                "classAccesses": {
+                    "nameTag": "apexClass",
+                    "booleanTags": [
+                        "enabled"
+                    ],
+                    "allTags": [
+                        "apexClass",
+                        "enabled"
+                    ],
+                    "oneFilePerTag": false,
+                    "filename": "<%= nameTag %>s.classAccesses",
+                    "fileformat": "json"
+                },
+                "customPermissions": {
+                    "nameTag": "name",
+                    "booleanTags": [
+                        "enabled"
+                    ],
+                    "allTags": [
+                        "enabled",
+                        "name"
+                    ],
+                    "oneFilePerTag": false,
+                    "filename": "<%= nameTag %>s.customPermissions",
+                    "fileformat": "json"
+                },
+                "fieldPermissions": {
+                    "nameTag": "field",
+                    "booleanTags": [
+                        "editable",
+                        "readable"
+                    ],
+                    "allTags": [
+                        "editable",
+                        "field",
+                        "readable"
+                    ],
+                    "oneFilePerTag": true,
+                    "filename": "<%= nameTag %>.fieldPermissions",
+                    "fileformat": "xml"
+                },
+                "objectPermissions": {
+                    "nameTag": "object",
+                    "booleanTags": [
+                        "allowCreate",
+                        "allowDelete",
+                        "allowEdit",
+                        "allowRead",
+                        "modifyAllRecords",
+                        "viewAllRecords"
+                    ],
+                    "allTags": [
+                        "allowCreate",
+                        "allowDelete",
+                        "allowEdit",
+                        "allowRead",
+                        "modifyAllRecords",
+                        "object",
+                        "viewAllRecords"
+                    ],
+                    "oneFilePerTag": true,
+                    "filename": "<%= nameTag %>.objectPermissions",
+                    "fileformat": "xml"
+                },
+                "pageAccesses": {
+                    "nameTag": "apexPage",
+                    "booleanTags": [
+                        "enabled"
+                    ],
+                    "allTags": [
+                        "apexPage",
+                        "enabled"
+                    ],
+                    "oneFilePerTag": false,
+                    "filename": "<%= nameTag %>s.pageAccesses",
+                    "fileformat": "json"
+                },
+                "recordTypeVisibilities": {
+                    "nameTag": "recordType",
+                    "booleanTags": [
+                        "default",
+                        "visible"
+                    ],
+                    "allTags": [
+                        "default",
+                        "recordType",
+                        "visible"
+                    ],
+                    "oneFilePerTag": true,
+                    "filename": "<%= nameTag %>.recordTypeVisibilities",
+                    "fileformat": "xml"
+                },
+                "tabVisibilities": {
+                    "nameTag": "tab",
+                    "booleanTags": [
+                        "visibility",
+                        "visible"
+                    ],
+                    "allTags": [
+                        "tab",
+                        "visibility"
+                    ],
+                    "oneFilePerTag": true,
+                    "filename": "<%= nameTag %>.recordTypeVisibilities",
+                    "fileformat": "xml"
+                },
+                "userPermissions": {
+                    "nameTag": "name",
+                    "booleanTags": [
+                        "enabled"
+                    ],
+                    "allTags": [
+                        "enabled",
+                        "name"
+                    ],
+                    "oneFilePerTag": false,
+                    "filename": "userPermissions",
+                    "fileformat": "json"
+                },
+                "layoutAssignments": {
+                    "nameTag": null,
+                    "booleanTags": [],
+                    "allTags": [
+                        "layout"
+                    ],
+                    "oneFilePerTag": false,
+                    "filename": "layoutAssignments",
+                    "fileformat": "xml"
+                },
+                "loginIpRanges": {
+                    "nameTag": null,
+                    "booleanTags": [],
+                    "allTags": [
+                        "endAddress",
+                        "startAddress"
+                    ],
+                    "oneFilePerTag": false,
+                    "filename": "loginIpRanges",
+                    "fileformat": "xml"
+                }
+            },
+            "metaTags": [
+                "custom",
+                "userLicense"
+            ],
+            "files": "profiles/*.profile"
+        },
+        "labels": {
+            "tags": {
+                "labels": {
+                    "nameTag": "fullName",
+                    "booleanTags": [],
+                    "alltags": [
+                        "fullName",
+                        "categories",
+                        "language",
+                        "protected",
+                        "shortDescription",
+                        "value"
+                    ],
+                    "oneFilePerTag": true,
+                    "filename": "<%= nameTag %>.label",
+                    "fileformat": "xml"
+                }
+            },
+            "metaTags": [],
+            "files": "labels/CustomLabels.labels"
+        },
+        "permissionsets": {
+            "tags": {
+                "applicationVisibilities": {
+                    "nameTag": "application",
+                    "booleanTags": [
+                        "visible"
+                    ],
+                    "allTags": [
+                        "application",
+                        "visible"
+                    ],
+                    "oneFilePerTag": true,
+                    "fileName": "<%= nameTag %>.application",
+                    "fileFormat": "xml"
+                },
+                "classAccesses": {
+                    "nameTag": "apexClass",
+                    "booleanTags": [
+                        "enabled"
+                    ],
+                    "allTags": [
+                        "apexClass",
+                        "enabled"
+                    ],
+                    "oneFilePerTag": false,
+                    "filename": "<%= nameTag %>s.classAccesses",
+                    "fileformat": "json"
+                },                
+                "fieldPermissions": {
+                    "nameTag": "field",
+                    "booleanTags": [
+                        "editable",
+                        "readable"
+                    ],
+                    "allTags": [
+                        "editable",
+                        "field",
+                        "readable"
+                    ],
+                    "oneFilePerTag": true,
+                    "filename": "<%= nameTag %>.fieldPermissions",
+                    "fileformat": "xml"
+                },
+                "objectPermissions": {
+                    "nameTag": "object",
+                    "booleanTags": [
+                        "allowCreate",
+                        "allowDelete",
+                        "allowEdit",
+                        "allowRead",
+                        "modifyAllRecords",
+                        "viewAllRecords"
+                    ],
+                    "allTags": [
+                        "allowCreate",
+                        "allowDelete",
+                        "allowEdit",
+                        "allowRead",
+                        "modifyAllRecords",
+                        "object",
+                        "viewAllRecords"
+                    ],
+                    "oneFilePerTag": true,
+                    "filename": "<%= nameTag %>.objectPermissions",
+                    "fileformat": "xml"
+                },
+                "pageAccesses": {
+                    "nameTag": "apexPage",
+                    "booleanTags": [
+                        "enabled"
+                    ],
+                    "allTags": [
+                        "apexPage",
+                        "enabled"
+                    ],
+                    "oneFilePerTag": false,
+                    "filename": "<%= nameTag %>s.pageAccesses",
+                    "fileformat": "json"
+                },
+                "recordTypeVisibilities": {
+                    "nameTag": "recordType",
+                    "booleanTags": [
+                        "visible"
+                    ],
+                    "allTags": [
+                        "recordType",
+                        "visible"
+                    ],
+                    "oneFilePerTag": true,
+                    "filename": "<%= nameTag %>.recordTypeVisibilities",
+                    "fileformat": "xml"
+                },               
+                "userPermissions": {
+                    "nameTag": "name",
+                    "booleanTags": [
+                        "enabled"
+                    ],
+                    "allTags": [
+                        "enabled",
+                        "name"
+                    ],
+                    "oneFilePerTag": false,
+                    "filename": "userPermissions",
+                    "fileformat": "json"
+                },
+                "tabSettings": {
+                    "nameTag": "tab",
+                    "booleanTags": ["visibility"],
+                    "allTags": [
+                        "tab",
+                        "visibility"
+                    ],
+                    "oneFilePerTag": false,
+                    "filename": "tabSettings",
+                    "fileformat": "json"
+                }    
+            },
+            "metaTags": [
+                "hasActivationRequired",
+                "label",
+                "license"
+            ],
+            "files": "permissionset/*.permissionset"
+        }
+    }
+}

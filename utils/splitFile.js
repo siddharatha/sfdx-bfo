@@ -14,6 +14,7 @@ function splitFile(fileName, targetFolder) {
         targetFolder + "/" + _.last(path.extname(fileName).split("."));
       fs.ensureDirSync(root);
       const corerefroot = root + "/" + path.basename(fileName);
+      let thefirstitemofthekey;
       fs.ensureDirSync(corerefroot);
       fs.ensureFileSync(
         corerefroot + "/" + path.basename(fileName) + "-meta.xml"
@@ -23,7 +24,7 @@ function splitFile(fileName, targetFolder) {
         subfolders: [],
         metafileproperties: []
       };
-      _.each(result, (value, key) => {
+      _.each(result, (value, key) => {        
         _.each(_.keysIn(value), eachKey => {
           thefirstitemofthekey = _.first(value[eachKey]);
           // console.log(thefirstitemofthekey);
@@ -37,11 +38,14 @@ function splitFile(fileName, targetFolder) {
             let booleanvars = _.filter(_.keys(thefirstitemofthekey), keyname =>
               isBooleanValue(_.first(_.get(thefirstitemofthekey, keyname)))
             );
-            if (_.isArray(filenamevar) && filenamevar.length === 1) {
+            if (booleanvars.length === 0)
+              folderStructure.metafileproperties.push(eachKey);                        
+            else if (_.isArray(filenamevar) && filenamevar.length === 1) {
               folderStructure.subfolders.push({
                 folderName: eachKey,
                 fileNamekey: _.first(filenamevar),
-                booleanvars: booleanvars
+                booleanvars: booleanvars,
+                allvars: _.keysIn(thefirstitemofthekey)
               });
             } else if (
               _.isArray(filenamevar) &&
@@ -50,16 +54,21 @@ function splitFile(fileName, targetFolder) {
               folderStructure.subfolders.push({
                 folderName: eachKey,
                 fileNamekey: "fullName",
-                booleanvars: booleanvars
+                booleanvars: booleanvars,
+                allvars: _.keysIn(thefirstitemofthekey)
               });
             } else {
               folderStructure.metafileproperties.push(eachKey);
+              console.log(eachKey,_.keysIn(thefirstitemofthekey))
             }
           } else {
             folderStructure.metafileproperties.push(eachKey);
+            console.log(eachKey,_.keysIn(thefirstitemofthekey));
           }
         });
         debugger;
+        fs.writeFileSync(`${root}.json`, JSON.stringify(folderStructure, null, 2));
+        
         var metainfo = {};
         _.each(folderStructure.metafileproperties, eachmetaproperty => {
           // console.log(_.get(value, eachmetaproperty));
@@ -79,35 +88,42 @@ function splitFile(fileName, targetFolder) {
         );
 
         _.each(folderStructure.subfolders, eachSubFolder => {
-          dataofkey = _.get(value, eachSubFolder.folderName);
+          dataofkey = _.get(value, eachSubFolder.folderName);          
           _.each(dataofkey, eachdata => {
             filename = _.get(eachdata, eachSubFolder.fileNamekey);
-            const finalfilename =
-              corerefroot +
-              "/" +
-              eachSubFolder.folderName +
-              "/" +
-              filename +
-              ".xml";
-            fs.ensureFileSync(finalfilename);
-            var builder = new xml2js.Builder({
-              rootName: eachSubFolder.folderName,
-              xmldec: {
-                version: "1.0",
-                encoding: "UTF-8"
-              }
+            var finalresult = false;
+            _.each(eachSubFolder.booleanvars, eachBooleanVar => {
+              // console.log(finalresult, theBooleanValue(_.first(eachdata[eachBooleanVar])), eachdata[eachBooleanVar],eachdata,eachBooleanVar);
+              finalresult = finalresult || theBooleanValue(_.first(eachdata[eachBooleanVar]));
             });
-            x = _.assign(
-              {
-                $: {
-                  xmlns: "http://soap.sforce.com/2006/04/metadata"
+            if (finalresult) {
+              const finalfilename =
+                corerefroot +
+                "/" +
+                eachSubFolder.folderName +
+                "/" +
+                filename +
+                ".xml";
+              fs.ensureFileSync(finalfilename);
+              var builder = new xml2js.Builder({
+                rootName: eachSubFolder.folderName,
+                xmldec: {
+                  version: "1.0",
+                  encoding: "UTF-8"
                 }
-              },
-              eachdata
-            );
+              });
+              x = _.assign(
+                {
+                  $: {
+                    xmlns: "http://soap.sforce.com/2006/04/metadata"
+                  }
+                },
+                eachdata
+              );
 
-            var xml = builder.buildObject(x);
-            fs.writeFileSync(finalfilename, xml);
+              var xml = builder.buildObject(x);
+              fs.writeFileSync(finalfilename, xml);
+            }
           });
         });
       });
@@ -151,7 +167,7 @@ function theBooleanValue(data) {
   }
 }
 
-// readProfile("smallerset/CustomLabels.labels", "labelstemp").then(() =>
+// splitFile("/Volumes/sidharth/sfdx-bfo/smallerset/profiles/SE - CCC Standard User.profile", "/Volumes/sidharth/sfdx-bfo/splits").then(() =>
 //   console.log("test")
 // );
 
