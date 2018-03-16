@@ -19,13 +19,13 @@ let count = 0;
     help: "bfo:doctor",
     flags: [],
     run(context) {
-      console.log("bfo doctor analysis");
+      console.log("bfo doctor analysis -- coming up");
       if (fs.existsSync(".git")) {
         console.log("good you are connected to a git repo");
       } else {
         console.log("you are not in a git repo");
       }
-      return true;
+      // process.exit(1);
     }
   };
 })();

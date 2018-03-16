@@ -43,6 +43,7 @@ const promisefs = Promise.promisifyAll(fs);
         });
         const coredirs = _.map(paths, eachpath => eachpath.path);
         fs.ensureDirSync(completetargetpath);
+        console.log(coredirs);
         _.each(coredirs, eachDir => {
           promisefs
             .readdirAsync(eachDir)
@@ -55,7 +56,7 @@ const promisefs = Promise.promisifyAll(fs);
                     completetargetpath
                   );
                 },
-                { concurrency: 20 }
+                { concurrency: 1000 }
               );
             })
             .catch(ex => console.log(ex));
