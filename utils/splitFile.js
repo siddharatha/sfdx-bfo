@@ -34,26 +34,37 @@ function splitFile(fileName, targetFolder, config) {
           }
         });
         var xml = builder.buildObject(metainfo);
-        fs.writeFileSync(
-          corerefroot + "/" + path.basename(fileName) + "-meta.xml",
-          xml
-        );
+        if (config.fileformat === 'xml')
+          fs.writeFileSync(
+            corerefroot + "/" + path.basename(fileName) + "-meta.xml",
+            xml
+          );
+        else
+          fs.writeJSONSync(corerefroot + "/" + path.basename(fileName) + "-meta.json", metainfo, { spaces: 2 });  
         _.each(config.tags, (configofkey, eachKey) => {
           let dataofkey = _.get(value, eachKey);
           _.each(dataofkey, eachdata => {
             name = _.get(eachdata, configofkey.nameTag);
             filename = _.template(configofkey.fileName)({ nameTag: name });
             var finalresult = false;
-            _.each(configofkey.booleanTags, eachBooleanTag => {
-              finalresult =
-                finalresult ||
-                theBooleanValue(_.first(eachdata[eachBooleanTag]));
-            });
+            if (config.trueconfig) {
+              var finalresult = false;
+              if (config.trueconfig)
+                _.each(configofkey.booleanTags, eachBooleanTag => {
+                  finalresult =
+                    finalresult ||
+                    theBooleanValue(_.first(eachdata[eachBooleanTag]));
+                });
+            }
+            else {
+              finalresult = true
+            };
             if (finalresult || configofkey.booleanTags.length === 0) {
               const finalfilename = `${corerefroot}/${eachKey}/${filename}.${
-                configofkey.fileFormat
-              }`;
-              if (configofkey.fileFormat === "xml") {
+                config.fileformat
+                }`;
+              // console.log(finalfilename);
+              if (config.fileformat === "xml") {
                 fs.ensureFileSync(finalfilename);
                 var builder = new xml2js.Builder({
                   rootName: eachKey,
@@ -72,7 +83,7 @@ function splitFile(fileName, targetFolder, config) {
                 );
                 var xml = builder.buildObject(x);
                 fs.writeFileSync(finalfilename, xml);
-              } else if (configofkey.fileFormat === "json") {
+              } else if (config.fileformat === "json") {
                 fs.ensureFileSync(finalfilename);
                 let tobeusedtags = [];
                 if (configofkey.booleanTags.length === 0) {
@@ -91,7 +102,7 @@ function splitFile(fileName, targetFolder, config) {
                 _.each(tobeusedtags, eachtag => {
                   theobject[eachtag] = _.first(_.get(eachdata, eachtag));
                 });
-                fs.writeJSONSync(finalfilename, theobject);
+                fs.writeJSONSync(finalfilename, theobject,{spaces:2});
                 //fs.writeFileSync(finalfilename, JSON.stringify(theobject));
               }
             }

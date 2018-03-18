@@ -1,5 +1,4 @@
-{
-    "40": {
+{    
         "profiles": {
             "tags": {
                 "applicationVisibilities": {
@@ -309,5 +308,5 @@
             ],
             "files": "permissionset/*.permissionset"
         }
-    }
+    
 }
