@@ -13,18 +13,15 @@ function splitFile(fileName, targetFolder, config) {
       const root =
         path.resolve(targetFolder) +
         "/" +
-        _.last(path.extname(fileName).split("."));
+        path.dirname(fileName);      
       fs.ensureDirSync(root);
       const corerefroot = root + "/" + path.basename(fileName);
       let thefirstitemofthekey;
       fs.ensureDirSync(corerefroot);
-      fs.ensureFileSync(
-        corerefroot + "/" + path.basename(fileName) + "-meta.xml"
-      );
       _.each(result, (value, key) => {
         let metainfo = {};
         _.each(config.metaTags, eachmetaproperty => {
-          metainfo[eachmetaproperty] = _.get(value, eachmetaproperty);
+          metainfo[eachmetaproperty] = _.first(_.get(value, eachmetaproperty));
         });
         var builder = new xml2js.Builder({
           rootName: key,
@@ -34,27 +31,38 @@ function splitFile(fileName, targetFolder, config) {
           }
         });
         var xml = builder.buildObject(metainfo);
-        fs.writeFileSync(
-          corerefroot + "/" + path.basename(fileName) + "-meta.xml",
-          xml
-        );
+        if (config.fileformat === 'xml')
+          fs.writeFileSync(
+            corerefroot + "/" + path.basename(fileName) + "-meta.xml",
+            xml
+          );
+        else
+          fs.writeJSONSync(corerefroot + "/" + path.basename(fileName) + "-meta.json", metainfo, { spaces: 2 });  
         _.each(config.tags, (configofkey, eachKey) => {
           let dataofkey = _.get(value, eachKey);
           _.each(dataofkey, eachdata => {
             name = _.get(eachdata, configofkey.nameTag);
             filename = _.template(configofkey.fileName)({ nameTag: name });
             var finalresult = false;
-            _.each(configofkey.booleanTags, eachBooleanTag => {
-              finalresult =
-                finalresult ||
-                theBooleanValue(_.first(eachdata[eachBooleanTag]));
-            });
+            if (config.trueconfig) {
+              var finalresult = false;
+              if (config.trueconfig)
+                _.each(configofkey.booleanTags, eachBooleanTag => {
+                  finalresult =
+                    finalresult ||
+                    theBooleanValue(_.first(eachdata[eachBooleanTag]));
+                });
+            }
+            else {
+              finalresult = true
+            };
             if (finalresult || configofkey.booleanTags.length === 0) {
               const finalfilename = `${corerefroot}/${eachKey}/${filename}.${
-                configofkey.fileFormat
-              }`;
-              if (configofkey.fileFormat === "xml") {
-                fs.ensureFileSync(finalfilename);
+                config.fileformat
+                }`;
+              // console.log(finalfilename);
+              fs.ensureFileSync(finalfilename);
+              if (config.fileformat === "xml") {                
                 var builder = new xml2js.Builder({
                   rootName: eachKey,
                   xmldec: {
@@ -62,37 +70,12 @@ function splitFile(fileName, targetFolder, config) {
                     encoding: "UTF-8"
                   }
                 });
-                x = _.assign(
-                  {
-                    $: {
-                      xmlns: "http://soap.sforce.com/2006/04/metadata"
-                    }
-                  },
-                  eachdata
-                );
-                var xml = builder.buildObject(x);
+                towritetofile = generateInfoFromConfig(configofkey, eachdata);
+                var xml = builder.buildObject(towritetofile);
                 fs.writeFileSync(finalfilename, xml);
-              } else if (configofkey.fileFormat === "json") {
-                fs.ensureFileSync(finalfilename);
-                let tobeusedtags = [];
-                if (configofkey.booleanTags.length === 0) {
-                  //labels
-                  tobeusedtags = configofkey.allTags.filter(
-                    i => i !== configofkey.nameTag
-                  );
-                } else {
-                  tobeusedtags = configofkey.allTags.filter(
-                    i =>
-                      configofkey.booleanTags.indexOf(i) > -1 &&
-                      i !== configofkey.nameTag
-                  );
-                }
-                theobject = {};
-                _.each(tobeusedtags, eachtag => {
-                  theobject[eachtag] = _.first(_.get(eachdata, eachtag));
-                });
-                fs.writeJSONSync(finalfilename, theobject);
-                //fs.writeFileSync(finalfilename, JSON.stringify(theobject));
+              } else if (config.fileformat === "json") {                
+                towritetofile = generateInfoFromConfig(configofkey, eachdata);
+                fs.writeJSONSync(finalfilename, towritetofile,{spaces:2});
               }
             }
           });
@@ -135,6 +118,27 @@ function theBooleanValue(data) {
         false;
     }
   }
+}
+
+function generateInfoFromConfig(configofkey, eachdata) {
+  let tobeusedtags = [];
+  if (configofkey.booleanTags.length === 0) {
+    //labels
+    tobeusedtags = configofkey.allTags.filter(
+      i => i !== configofkey.nameTag
+    );
+  } else {
+    tobeusedtags = configofkey.allTags.filter(
+      i =>
+        configofkey.booleanTags.indexOf(i) > -1 &&
+        i !== configofkey.nameTag
+    );
+  }
+  theobject = {};
+  _.each(tobeusedtags, eachtag => {
+    theobject[eachtag] = _.first(_.get(eachdata, eachtag));
+  });
+  return theobject;
 }
 
 module.exports = splitFile;

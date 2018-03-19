@@ -26,17 +26,26 @@ const glob = require("glob");
       },
       {
         name: "trueconfig",
-        char: "c",
+        char: "b",
         description: "true config",
+        hasValue: true,
+        required: false
+      },
+      {
+        name: "fileformat",
+        char: "f",
+        description: "file format",
         hasValue: true,
         required: false
       }
     ],
     run(context) {
-      const { targetfolder, trueconfig } = context.flags;
+      const targetfolder = context.flags.targetfolder || 'splits';
+      const trueconfig = context.flags.trueconfig ? theBooleanValue(context.flags.trueconfig) : true;
+      const fileformat = context.flags.fileformat || 'json';          
       prepareConfiguration().then(newconfig => {
         Promise.map(_.values(newconfig), eachConfig => {
-          _.assign(eachConfig, { targetfolder }, { trueconfig });
+          _.assign(eachConfig, { targetfolder }, { trueconfig }, {fileformat });
           return processConfig(eachConfig);
         })
           .then(r => console.log("finished"))
@@ -91,12 +100,13 @@ function processConfig(eachConfig) {
     Promise.map(
       eachConfig.files,
       eachFile => {
-        const { tags, metaTags, targetfolder, trueconfig } = eachConfig;
+        const { tags, metaTags, targetfolder, trueconfig, fileformat } = eachConfig;
         return processFile(eachFile, {
           tags,
           metaTags,
           targetfolder,
-          trueconfig
+          trueconfig,
+          fileformat
         });
       },
       { concurrency: 1000 }
@@ -112,4 +122,21 @@ function processFile(eachfile, eachconfig) {
       resolve()
     );
   });
+}
+
+function theBooleanValue(data) {
+  if (data && _.isString(data)) {
+    var toprocess = data.toLowerCase().trim();
+    switch (toprocess) {
+      case "true":
+      case "yes":
+        return true;
+        break;
+      case "false":
+        return false;
+        break;
+      default:
+        false;
+    }
+  }
 }
