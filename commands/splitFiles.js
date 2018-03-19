@@ -40,12 +40,19 @@ const glob = require("glob");
       }
     ],
     run(context) {
-      const targetfolder = context.flags.targetfolder || 'splits';
-      const trueconfig = context.flags.trueconfig ? theBooleanValue(context.flags.trueconfig) : true;
-      const fileformat = context.flags.fileformat || 'json';          
+      const targetfolder = context.flags.targetfolder || "splits";
+      const trueconfig = context.flags.trueconfig
+        ? theBooleanValue(context.flags.trueconfig)
+        : true;
+      const fileformat = context.flags.fileformat || "json";
       prepareConfiguration().then(newconfig => {
         Promise.map(_.values(newconfig), eachConfig => {
-          _.assign(eachConfig, { targetfolder }, { trueconfig }, {fileformat });
+          _.assign(
+            eachConfig,
+            { targetfolder },
+            { trueconfig },
+            { fileformat }
+          );
           return processConfig(eachConfig);
         })
           .then(r => console.log("finished"))
@@ -55,9 +62,12 @@ const glob = require("glob");
   };
 })();
 
-function getFileListFromPattern(pattern, key) {
+function getFileListFromPattern(pattern, key, toIgnoreFiles) {
   return new Promise((resolve, reject) => {
     glob(pattern, (err, matches) => {
+      matches = matches.filter(
+        eachMatch => (_.indexOf(toIgnoreFiles, eachMatch) === -1 ? true : false)
+      );
       resolve({ key, matches });
     });
   });
@@ -71,11 +81,16 @@ function prepareConfiguration() {
         files: value.files,
         tags: value.tags,
         metaTags: value.metaTags,
-        key: key
+        key: key,
+        toIgnoreFiles: value.toIgnoreFiles
       };
     });
     Promise.map(updatedConfig, eachConfig =>
-      getFileListFromPattern(eachConfig.files, eachConfig.key)
+      getFileListFromPattern(
+        eachConfig.files,
+        eachConfig.key,
+        _.get(eachConfig, "toIgnoreFiles", [])
+      )
     ).then(values => {
       let filesWithType = _.mapValues(
         _.mapKeys(
@@ -100,7 +115,13 @@ function processConfig(eachConfig) {
     Promise.map(
       eachConfig.files,
       eachFile => {
-        const { tags, metaTags, targetfolder, trueconfig, fileformat } = eachConfig;
+        const {
+          tags,
+          metaTags,
+          targetfolder,
+          trueconfig,
+          fileformat
+        } = eachConfig;
         return processFile(eachFile, {
           tags,
           metaTags,

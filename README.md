@@ -1,3 +1,8 @@
+# todo
+
+* sfdx bfo:split -b false as default , always generate with false values
+* clean up profiles, permissionsets, labels folders, do not clean up splits.
+
 # onboarding
 
 * install the salesforce cli https://developer.salesforce.com/tools/sfdxcli
