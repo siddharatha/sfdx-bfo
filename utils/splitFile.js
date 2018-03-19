@@ -13,7 +13,7 @@ function splitFile(fileName, targetFolder, config) {
       const root =
         path.resolve(targetFolder) +
         "/" +
-        _.last(path.extname(fileName).split("."));
+        path.dirname(fileName);      
       fs.ensureDirSync(root);
       const corerefroot = root + "/" + path.basename(fileName);
       let thefirstitemofthekey;

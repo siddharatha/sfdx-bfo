@@ -10,12 +10,13 @@ function mergeFile(srcfolder, targetfolder) {
   return new Promise((resolve, rejects) => {
     console.log(path.resolve(srcfolder), path.resolve(targetfolder));
     rootFolders = fs.readdirSync(path.resolve(srcfolder));
-    const finalfile = _.first(_.first(rootFolders).split("-meta.xml"));
+    const finalfile = _.first(_.first(rootFolders).split("-meta."));
     let thefirsttag = "";
-    const filterFn = item => path.extname(item.path) === ".xml";
+    const filterFn = item => path.extname(item.path) === ".xml" || path.extname(item.path) === '.json';
     const paths = klawSync(srcfolder, {
       filter: filterFn
     });
+    console.log(paths);    
     Promise.map(
       paths,
       pat => {

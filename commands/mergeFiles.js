@@ -5,6 +5,8 @@ const xml2js = require("xml2js");
 const _ = require("lodash");
 const klawSync = require("klaw-sync");
 const mergeFile = require("../utils/mergeFile");
+let config = require("../utils/config");
+const glob = require("glob");
 
 const promisefs = Promise.promisifyAll(fs);
 
@@ -22,54 +24,91 @@ const promisefs = Promise.promisifyAll(fs);
         char: "s",
         description: "source folder",
         hasValue: true,
-        required: true
-      },
-      {
-        name: "targetfolder",
-        char: "t",
-        description: "target folder",
-        hasValue: true,
-        required: true
+        required: false
       }
     ],
     run(context) {
-      const srcfolder = context.flags.srcfolder;
-      const targetfolder = context.flags.targetfolder;
-      const completesrcpath = path.resolve(srcfolder);
-      const completetargetpath = path.resolve(targetfolder);
-      if (fs.existsSync(completesrcpath)) {
-        fs.ensureDirSync(completetargetpath);
-        const paths = klawSync(srcfolder, {
-          nofile: true
-        });
-        const coredirs = _.flatten(
-          _.filter(
-            _.map(paths, eachpath => eachpath.path),
-            eachPath => eachPath.indexOf(".") === -1
-          )
-        );
-        if (coredirs.length === 0) coredirs.push(srcfolder);
-        console.log(coredirs);
-        _.each(coredirs, eachDir => {
-          promisefs
-            .readdirAsync(eachDir)
-            .then(filelist => {
-              Promise.map(
-                filelist,
-                eachfilename => {
-                  return mergeFile(
-                    eachDir + "/" + eachfilename,
-                    completetargetpath
-                  );
-                },
-                { concurrency: 20 }
-              );
-            })
-            .catch(ex => console.log(ex));
-        });
-      } else {
-        console.log("source or target doesn't exist");
-      }
+      const srcfolder = context.flags.srcfolder || 'splits';      
+      const completesrcpath = path.resolve(srcfolder);  
+      
+      prepareConfiguration(completesrcpath).then(newconfig => {
+        Promise.map(_.values(newconfig), eachConfig => {          
+          return processConfig(eachConfig);
+        })
+          .then(r => console.log("finished"))
+          .catch(f => console.log("failed"));
+      });
+
+      
     }
   };
 })();
+
+
+function processConfig(eachConfig) {
+  return new Promise((resolve, reject) => {
+    Promise.map(
+      eachConfig.files,
+      eachFile => {
+        const { tags, metaTags } = eachConfig;
+        return processFile(eachFile, {
+          tags,
+          metaTags          
+        });
+      },
+      { concurrency: 1000 }
+    )
+      .then(v => resolve())
+      .catch(e => reject());
+  });
+}
+
+function processFile(eachfile, eachconfig) {
+  return new Promise((resolve, reject) => {
+    console.log(eachfile);
+    resolve();
+    // mergeFile(eachfile, '../', eachconfig).then(() =>
+    //   resolve()
+    // );
+  });
+}
+
+function getFileListFromPattern(pattern, key) {
+  return new Promise((resolve, reject) => {
+    glob(pattern, (err, matches) => {
+      resolve({ key, matches });
+    });
+  });
+}
+
+function prepareConfiguration(srcpath) {
+  return new Promise((resolve, reject) => {
+    const updatedConfig = _.map(config, (value, key) => {
+      // console.log(value);
+      return {
+        files: value.files,
+        tags: value.tags,
+        metaTags: value.metaTags,
+        key: key
+      };
+    });
+    Promise.map(updatedConfig, eachConfig =>
+      getFileListFromPattern(srcpath+'/'+eachConfig.files, eachConfig.key)
+    ).then(values => {
+      let filesWithType = _.mapValues(
+        _.mapKeys(
+          _.flatten(_.filter(_.values(_.map(_.groupBy(values, "key"))))),
+          "key"
+        ),
+        "matches"
+      );
+      let newconfig = {};
+      _.each(config, (value, key) => {
+        newconfig[key] = value;
+        newconfig[key].files = filesWithType[key];
+      });
+      // console.log(_.keysIn(newconfig));
+      resolve(newconfig);
+    });
+  });
+}
