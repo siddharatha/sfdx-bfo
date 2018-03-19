@@ -18,13 +18,10 @@ function splitFile(fileName, targetFolder, config) {
       const corerefroot = root + "/" + path.basename(fileName);
       let thefirstitemofthekey;
       fs.ensureDirSync(corerefroot);
-      fs.ensureFileSync(
-        corerefroot + "/" + path.basename(fileName) + "-meta.xml"
-      );
       _.each(result, (value, key) => {
         let metainfo = {};
         _.each(config.metaTags, eachmetaproperty => {
-          metainfo[eachmetaproperty] = _.get(value, eachmetaproperty);
+          metainfo[eachmetaproperty] = _.first(_.get(value, eachmetaproperty));
         });
         var builder = new xml2js.Builder({
           rootName: key,
@@ -64,8 +61,8 @@ function splitFile(fileName, targetFolder, config) {
                 config.fileformat
                 }`;
               // console.log(finalfilename);
-              if (config.fileformat === "xml") {
-                fs.ensureFileSync(finalfilename);
+              fs.ensureFileSync(finalfilename);
+              if (config.fileformat === "xml") {                
                 var builder = new xml2js.Builder({
                   rootName: eachKey,
                   xmldec: {
@@ -73,37 +70,12 @@ function splitFile(fileName, targetFolder, config) {
                     encoding: "UTF-8"
                   }
                 });
-                x = _.assign(
-                  {
-                    $: {
-                      xmlns: "http://soap.sforce.com/2006/04/metadata"
-                    }
-                  },
-                  eachdata
-                );
-                var xml = builder.buildObject(x);
+                towritetofile = generateInfoFromConfig(configofkey, eachdata);
+                var xml = builder.buildObject(towritetofile);
                 fs.writeFileSync(finalfilename, xml);
-              } else if (config.fileformat === "json") {
-                fs.ensureFileSync(finalfilename);
-                let tobeusedtags = [];
-                if (configofkey.booleanTags.length === 0) {
-                  //labels
-                  tobeusedtags = configofkey.allTags.filter(
-                    i => i !== configofkey.nameTag
-                  );
-                } else {
-                  tobeusedtags = configofkey.allTags.filter(
-                    i =>
-                      configofkey.booleanTags.indexOf(i) > -1 &&
-                      i !== configofkey.nameTag
-                  );
-                }
-                theobject = {};
-                _.each(tobeusedtags, eachtag => {
-                  theobject[eachtag] = _.first(_.get(eachdata, eachtag));
-                });
-                fs.writeJSONSync(finalfilename, theobject,{spaces:2});
-                //fs.writeFileSync(finalfilename, JSON.stringify(theobject));
+              } else if (config.fileformat === "json") {                
+                towritetofile = generateInfoFromConfig(configofkey, eachdata);
+                fs.writeJSONSync(finalfilename, towritetofile,{spaces:2});
               }
             }
           });
@@ -146,6 +118,27 @@ function theBooleanValue(data) {
         false;
     }
   }
+}
+
+function generateInfoFromConfig(configofkey, eachdata) {
+  let tobeusedtags = [];
+  if (configofkey.booleanTags.length === 0) {
+    //labels
+    tobeusedtags = configofkey.allTags.filter(
+      i => i !== configofkey.nameTag
+    );
+  } else {
+    tobeusedtags = configofkey.allTags.filter(
+      i =>
+        configofkey.booleanTags.indexOf(i) > -1 &&
+        i !== configofkey.nameTag
+    );
+  }
+  theobject = {};
+  _.each(tobeusedtags, eachtag => {
+    theobject[eachtag] = _.first(_.get(eachdata, eachtag));
+  });
+  return theobject;
 }
 
 module.exports = splitFile;
