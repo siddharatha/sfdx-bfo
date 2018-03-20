@@ -1,6 +1,6 @@
 # todo
 
-* sfdx bfo:split -b false as default , always generate with false values
+* sfdx bfo:split -b false as default , always generate with false values. Specific guideline for release team to make sure they generate only true values when split and when merge.
 * clean up profiles, permissionsets, labels folders, do not clean up splits.
 
 # onboarding

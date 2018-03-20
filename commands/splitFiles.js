@@ -8,6 +8,7 @@ const klawSync = require("klaw-sync");
 let config = require("../utils/config");
 const promisefs = Promise.promisifyAll(fs);
 const glob = require("glob");
+const colors = require("colors");
 (function() {
   "use strict";
 
@@ -45,7 +46,23 @@ const glob = require("glob");
         ? theBooleanValue(context.flags.trueconfig)
         : true;
       const fileformat = context.flags.fileformat || "json";
+      console.log(
+        `Analyzing the folder structure to split \nTarget Folder is ${colors.green(
+          targetfolder
+        )} \n ${
+          trueconfig
+            ? "Will generate only for " + colors.green("true") + " values"
+            : "Will generate both " +
+              colors.red("false") +
+              ", be careful when you run on complete profile set"
+        } \nThe file format chosen is ${colors.bgYellow(fileformat)}`
+      );
       prepareConfiguration().then(newconfig => {
+        console.log(
+          `Preparing list of files from configration,\nplease refer here to understand the config: ${colors.blue(
+            "https://bitbucket.org/snippets/sesa206167/keRRKa"
+          )}`
+        );
         Promise.map(_.values(newconfig), eachConfig => {
           _.assign(
             eachConfig,
@@ -68,6 +85,7 @@ function getFileListFromPattern(pattern, key, toIgnoreFiles) {
       matches = matches.filter(
         eachMatch => (_.indexOf(toIgnoreFiles, eachMatch) === -1 ? true : false)
       );
+      console.log(`${key} : ${matches.length}`);
       resolve({ key, matches });
     });
   });
