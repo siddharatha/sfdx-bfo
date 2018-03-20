@@ -55,7 +55,7 @@ const colors = require("colors");
             : "Will generate both " +
               colors.red("false") +
               ", be careful when you run on complete profile set"
-        } \nThe file format chosen is ${colors.bgYellow(fileformat)}`
+        } \nThe file format chosen is ${colors.yellow(fileformat)}`
       );
       prepareConfiguration().then(newconfig => {
         console.log(

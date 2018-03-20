@@ -108,28 +108,41 @@ function splitFile(fileName, targetFolder, config) {
             }
           });
           if (!_.isEmpty(thearray)) {
-            const finalfilenamemeta = `${corerefroot}/${eachKey}/${filename}-meta.${
-              config.fileformat
-            }`;
-            const finalfilename = `${corerefroot}/${eachKey}/${filename}.txt`;
-            fs.ensureFileSync(finalfilename);
-            fs.ensureFileSync(finalfilenamemeta);
             let finalfilenamemetadata, finalfilenamedata;
             myobject = {};
             if (configofkey.nameTag && configofkey.nameTag != "null") {
               finalfilenamemetadata = { nameTag: configofkey.nameTag };
               finalfilenamedata = _.flatten(thearray).join("\n");
             } else {
-              finalfilenamedata = _.flatten(thearray).join("\n");
+              finalfilenamedata = _.flatten(thearray);
             }
-            fs.writeFileSync(finalfilename, finalfilenamedata);
+            if (finalfilenamedata && _.isString(finalfilenamedata)) {
+              const finalfilename = `${corerefroot}/${eachKey}/${filename}.txt`;
+              fs.ensureFileSync(finalfilename);
+              fs.writeFileSync(finalfilename, finalfilenamedata);
+            } else {
+              const finalfilename = `${corerefroot}/${eachKey}/${filename}.${
+                config.fileformat
+              }`;
+              fs.ensureFileSync(finalfilename);
+              fs.writeJSONSync(finalfilename, finalfilenamedata, { spaces: 2 });
+            }
             finalfilenamemetadata = _.assign(
               finalfilenamemetadata,
               booleanstuff
             );
-            fs.writeJSONSync(finalfilenamemeta, finalfilenamemetadata, {
-              spaces: 2
-            });
+            if (
+              !_.isEmpty(_.keysIn(finalfilenamemetadata)) &&
+              _.isString(finalfilenamedata)
+            ) {
+              const finalfilenamemeta = `${corerefroot}/${eachKey}/${filename}-meta.${
+                config.fileformat
+              }`;
+              fs.ensureFileSync(finalfilenamemeta);
+              fs.writeJSONSync(finalfilenamemeta, finalfilenamemetadata, {
+                spaces: 2
+              });
+            }
           }
         });
       });
