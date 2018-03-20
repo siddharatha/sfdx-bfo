@@ -187,14 +187,15 @@ function theBooleanValue(data) {
 
 function generateInfoFromConfig(configofkey, eachdata) {
   let tobeusedtags = [];
-  if (configofkey.booleanTags.length === 0) {
-    //labels
-    tobeusedtags = configofkey.allTags.filter(i => i !== configofkey.nameTag);
-  } else {
-    tobeusedtags = configofkey.allTags.filter(
-      i => configofkey.booleanTags.indexOf(i) > -1 && i !== configofkey.nameTag
-    );
-  }
+  // if (configofkey.booleanTags.length === 0) {
+  //   //labels
+  //   tobeusedtags = configofkey.allTags.filter(i => i !== configofkey.nameTag);
+  // } else {
+  //   tobeusedtags = configofkey.allTags.filter(
+  //     i => configofkey.booleanTags.indexOf(i) > -1 && i !== configofkey.nameTag
+  //   );
+  // }
+  tobeusedtags = configofkey.allTags.filter(i => i !== configofkey.nameTag);
   theobject = {};
   _.each(tobeusedtags, eachtag => {
     theobject[eachtag] = _.first(_.get(eachdata, eachtag));

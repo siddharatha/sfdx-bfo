@@ -12,15 +12,15 @@ module.exports = {
         nameTag: "apexClass",
         booleanTags: ["enabled"],
         allTags: ["apexClass", "enabled"],
-        oneFilePerTag: false,
-        fileName: "classAccesses"
+        oneFilePerTag: true,
+        fileName: "<%= nameTag %>"
       },
       customPermissions: {
         nameTag: "name",
         booleanTags: ["enabled"],
         allTags: ["enabled", "name"],
-        oneFilePerTag: false,
-        fileName: "customPermissions"
+        oneFilePerTag: true,
+        fileName: "<%= nameTag %>"
       },
       fieldPermissions: {
         nameTag: "field",
@@ -55,8 +55,8 @@ module.exports = {
         nameTag: "apexPage",
         booleanTags: ["enabled"],
         allTags: ["apexPage", "enabled"],
-        oneFilePerTag: false,
-        fileName: "pageAccesses"
+        oneFilePerTag: true,
+        fileName: "<%= nameTag %>"
       },
       recordTypeVisibilities: {
         nameTag: "recordType",
@@ -76,8 +76,8 @@ module.exports = {
         nameTag: "name",
         booleanTags: ["enabled"],
         allTags: ["enabled", "name"],
-        oneFilePerTag: false,
-        fileName: "userPermissions"
+        oneFilePerTag: true,
+        fileName: "<%= nameTag %>"
       },
       layoutAssignments: {
         nameTag: "layout",
@@ -85,13 +85,6 @@ module.exports = {
         allTags: ["layout", "recordType"],
         oneFilePerTag: true,
         fileName: "<%= nameTag %>"
-      },
-      loginIpRanges: {
-        nameTag: null,
-        booleanTags: [],
-        allTags: ["endAddress", "startAddress"],
-        oneFilePerTag: false,
-        fileName: "loginIpRanges"
       }
     },
     metaTags: ["custom", "userLicense"],
@@ -169,22 +162,22 @@ module.exports = {
         nameTag: "application",
         booleanTags: ["visible"],
         allTags: ["application", "visible"],
-        oneFilePerTag: false,
-        fileName: "applicationVisibilities"
+        oneFilePerTag: true,
+        fileName: "<%= nameTag %>"
       },
       classAccesses: {
         nameTag: "apexClass",
         booleanTags: ["enabled"],
         allTags: ["apexClass", "enabled"],
-        oneFilePerTag: false,
-        fileName: "classAccesses"
+        oneFilePerTag: true,
+        fileName: "<%= nameTag %>"
       },
       fieldPermissions: {
         nameTag: "field",
         booleanTags: ["editable", "readable"],
         allTags: ["editable", "field", "readable"],
         oneFilePerTag: true,
-        fileName: "fieldPermissions"
+        fileName: "<%= nameTag %>"
       },
       objectPermissions: {
         nameTag: "object",
@@ -212,29 +205,29 @@ module.exports = {
         nameTag: "apexPage",
         booleanTags: ["enabled"],
         allTags: ["apexPage", "enabled"],
-        oneFilePerTag: false,
-        fileName: "pageAccesses"
+        oneFilePerTag: true,
+        fileName: "<%= nameTag %>"
       },
       recordTypeVisibilities: {
         nameTag: "recordType",
         booleanTags: ["visible"],
         allTags: ["recordType", "visible"],
-        oneFilePerTag: false,
-        fileName: "recordTypeVisibilities"
+        oneFilePerTag: true,
+        fileName: "<%= nameTag %>"
       },
       userPermissions: {
         nameTag: "name",
         booleanTags: ["enabled"],
         allTags: ["enabled", "name"],
-        oneFilePerTag: false,
-        fileName: "userPermissions"
+        oneFilePerTag: true,
+        fileName: "<%= nameTag %>"
       },
       tabSettings: {
         nameTag: "tab",
         booleanTags: ["visibility"],
         allTags: ["tab", "visibility"],
-        oneFilePerTag: false,
-        fileName: "tabSettings"
+        oneFilePerTag: true,
+        fileName: "<%= nameTag %>"
       }
     },
     metaTags: ["hasActivationRequired", "label", "license"],

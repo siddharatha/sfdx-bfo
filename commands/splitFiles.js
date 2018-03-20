@@ -157,9 +157,10 @@ function processConfig(eachConfig) {
 
 function processFile(eachfile, eachconfig) {
   return new Promise((resolve, reject) => {
-    splitFile(eachfile, eachconfig.targetfolder, eachconfig).then(() =>
-      resolve()
-    );
+    splitFile(eachfile, eachconfig.targetfolder, eachconfig).then(() => {
+      bar.tick();
+      resolve();
+    });
   });
 }
 
