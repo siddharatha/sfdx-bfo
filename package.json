@@ -1,6 +1,6 @@
 {
   "name": "sfdx-bfo",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "description":
     "Tools to generate the profile and custom labelfolders close to dx format",
   "main": "index.js",

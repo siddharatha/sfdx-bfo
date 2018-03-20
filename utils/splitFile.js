@@ -108,16 +108,26 @@ function splitFile(fileName, targetFolder, config) {
             }
           });
           if (!_.isEmpty(thearray)) {
-            const finalfilename = `${corerefroot}/${eachKey}/${filename}.${
+            const finalfilenamemeta = `${corerefroot}/${eachKey}/${filename}-meta.${
               config.fileformat
             }`;
+            const finalfilename = `${corerefroot}/${eachKey}/${filename}.txt`;
             fs.ensureFileSync(finalfilename);
+            fs.ensureFileSync(finalfilenamemeta);
+            let finalfilenamemetadata, finalfilenamedata;
             myobject = {};
-            if (configofkey.nameTag && configofkey.nameTag != "null")
-              myobject[configofkey.nameTag] = _.flatten(thearray);
-            else myobject = _.flatten(thearray);
-            myobject = _.assign(myobject, booleanstuff);
-            fs.writeJSONSync(finalfilename, myobject, {
+            if (configofkey.nameTag && configofkey.nameTag != "null") {
+              finalfilenamemetadata = { nameTag: configofkey.nameTag };
+              finalfilenamedata = _.flatten(thearray).join("\n");
+            } else {
+              finalfilenamedata = _.flatten(thearray).join("\n");
+            }
+            fs.writeFileSync(finalfilename, finalfilenamedata);
+            finalfilenamemetadata = _.assign(
+              finalfilenamemetadata,
+              booleanstuff
+            );
+            fs.writeJSONSync(finalfilenamemeta, finalfilenamemetadata, {
               spaces: 2
             });
           }
