@@ -134,7 +134,8 @@ module.exports = {
       "profiles/SE - DMT Standard User %28Force%2Ecom%29.profile",
       "profiles/Salesforce Identity Login Widget Profile.profile",
       "profiles/demo Profile.profile"
-    ]
+    ],
+    rootTag: 'Profile'
   },
   labels: {
     tags: {
@@ -154,7 +155,8 @@ module.exports = {
       }
     },
     metaTags: [],
-    files: "labels/CustomLabels.labels"
+    files: "labels/CustomLabels.labels",
+    rootTag:"CustomLabels"
   },
   permissionsets: {
     tags: {
@@ -231,6 +233,7 @@ module.exports = {
       }
     },
     metaTags: ["hasActivationRequired", "label", "license"],
-    files: "permissionsets/*.permissionset"
+    files: "permissionsets/*.permissionset",
+    rootTag: "PermissionSet"
   }
 };

@@ -32,7 +32,7 @@ const promisefs = Promise.promisifyAll(fs);
       const completesrcpath = path.resolve(srcfolder);  
       
       prepareConfiguration(completesrcpath).then(newconfig => {
-        Promise.map(_.values(newconfig), eachConfig => {          
+        Promise.map(_.values(newconfig), eachConfig => {
           return processConfig(eachConfig);
         })
           .then(r => console.log("finished"))
@@ -50,11 +50,7 @@ function processConfig(eachConfig) {
     Promise.map(
       eachConfig.files,
       eachFile => {
-        const { tags, metaTags } = eachConfig;
-        return processFile(eachFile, {
-          tags,
-          metaTags          
-        });
+        return processFile(eachFile, eachConfig);
       },
       { concurrency: 1000 }
     )
@@ -65,17 +61,20 @@ function processConfig(eachConfig) {
 
 function processFile(eachfile, eachconfig) {
   return new Promise((resolve, reject) => {
-    console.log(eachfile);
     resolve();
-    // mergeFile(eachfile, '../', eachconfig).then(() =>
-    //   resolve()
-    // );
+    mergeFile(eachfile, '../', eachconfig).then(() =>
+      resolve()
+    );
   });
 }
 
-function getFileListFromPattern(pattern, key) {
+function getFileListFromPattern(pattern, key, toIgnoreFiles) {
   return new Promise((resolve, reject) => {
     glob(pattern, (err, matches) => {
+      matches = matches.filter(
+        eachMatch => (_.indexOf(toIgnoreFiles, eachMatch) === -1 ? true : false)
+      );
+      console.log(`${key} : ${matches.length}`);
       resolve({ key, matches });
     });
   });
@@ -84,12 +83,12 @@ function getFileListFromPattern(pattern, key) {
 function prepareConfiguration(srcpath) {
   return new Promise((resolve, reject) => {
     const updatedConfig = _.map(config, (value, key) => {
-      // console.log(value);
       return {
         files: value.files,
         tags: value.tags,
         metaTags: value.metaTags,
-        key: key
+        key: key,
+        rootTag: value.rootTag
       };
     });
     Promise.map(updatedConfig, eachConfig =>
@@ -106,8 +105,8 @@ function prepareConfiguration(srcpath) {
       _.each(config, (value, key) => {
         newconfig[key] = value;
         newconfig[key].files = filesWithType[key];
-      });
-      // console.log(_.keysIn(newconfig));
+        newconfig[key]['key'] = key;
+      });      
       resolve(newconfig);
     });
   });

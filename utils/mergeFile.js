@@ -6,70 +6,84 @@ const xml2js = require("xml2js");
 const klawSync = require("klaw-sync");
 parser = new xml2js.Parser();
 
-function mergeFile(srcfolder, targetfolder) {
-  return new Promise((resolve, rejects) => {
-    console.log(path.resolve(srcfolder), path.resolve(targetfolder));
+function mergeFile(srcfolder, targetfolder, config) {  
+  return new Promise((resolve, rejects) => {        
     rootFolders = fs.readdirSync(path.resolve(srcfolder));
     const finalfile = _.first(_.first(rootFolders).split("-meta."));
-    let thefirsttag = "";
-    const filterFn = item => path.extname(item.path) === ".xml" || path.extname(item.path) === '.json';
-    const paths = klawSync(srcfolder, {
-      filter: filterFn
-    });
-    console.log(paths);    
+    rootFolders = rootFolders.filter(eachfolder => eachfolder.indexOf('-meta.') === -1);
+    
     Promise.map(
-      paths,
-      pat => {
-        return parseIndivFile(pat.path, rootFolders);
+      rootFolders,
+      eachFolder => {        
+        return parseIndivFolder(srcfolder, eachFolder, config.tags[eachFolder].nameTag, config.tags[eachFolder].booleanTags);
       },
       { concurrency: 3 }
-    ).then(alldata => {
-      const rootnode = _.first(alldata);
-      let res = {};
-      _.each(alldata, eachEntry => {
-        firstkey = _.first(_.keysIn(eachEntry));
-        if (_.has(res, firstkey)) res[firstkey].push(eachEntry[firstkey]);
-        else res[firstkey] = [eachEntry[firstkey]];
-      });
-      thefirsttag = _.first(_.keysIn(rootnode));
-      delete res[thefirsttag];
-      finalres = _.assign(rootnode[thefirsttag], res);
-      finalres = _.assign(finalres, {
+    ).then(alldata => {      
+            
+      finalres = _.assign(...alldata, {
         $: { xmlns: "http://soap.sforce.com/2006/04/metadata" }
       });
       var builder = new xml2js.Builder({
-        rootName: thefirsttag,
+        rootName: config.rootTag,
         xmldec: {
           version: "1.0",
           encoding: "UTF-8"
-        }
-      });
+        }        
+      });      
       var xml = builder.buildObject(finalres);
+      var finalfilename = process.cwd() + "/" + config.key + "/" + finalfile;
       fs.ensureFileSync(
-        targetfolder + "/" + thefirsttag + "/" + finalfile,
+        finalfilename,
         xml
       );
-      fs.writeFileSync(targetfolder + "/" + thefirsttag + "/" + finalfile, xml);
+      fs.writeFileSync(finalfilename, xml);
       resolve();
     });
   });
 }
 
-function parseIndivFile(eachFile, rootFolders) {
+function parseIndivFolder(srcfolder,thefolder,thetag,booleantags) {
   return new Promise((resolve, reject) => {
-    parser.parseString(fs.readFileSync(eachFile), (err, data) => {
-      parser.reset();
-      //data = _.omit(data, "$");
-      const mykey = _.first(_.keys(data));
-      const myvalue = _.omit(_.first(_.values(data)), "$");
-      data = {};
-      data[mykey] = myvalue;
-
-      // console.log(data);
-      resolve(data);
-    });
-  });
+    allfolders = fs.readdirSync(srcfolder+'/'+thefolder);
+    var theresponse = {};
+    theresponse[thefolder] = 
+    _.filter(_.map(allfolders, eachFile => {
+      let jsondata = fs.readJSONSync(srcfolder + '/' +thefolder+'/'+eachFile);
+      let filename = path.basename(eachFile);
+      let finalboolvalue = false;
+      if (booleantags.length > 0) {
+        _.each(booleantags, eachtag => {
+          finalboolvalue = finalboolvalue || theBooleanValue(jsondata[eachtag])
+        });
+      }
+      else finalboolvalue = true;
+      if (finalboolvalue) {
+        let myobject = {}
+        myobject[thetag] = _.first(filename.split('.json'));
+        return _.assign(myobject, jsondata);
+      }
+      else return null;
+      }));
+    resolve(theresponse);
+  })
 }
 
-//mergeFile("temp/labels/CustomLabels.labels", "newtemp");
+function theBooleanValue(data) {
+  if (data && _.isString(data)) {
+    var toprocess = data.toLowerCase().trim();
+    switch (toprocess) {
+      case "true":
+      case "defaulton":
+        return true;
+      case "false":
+      case "defaultoff":
+      case "hidden":
+        return false;
+      default:
+        false;
+    }
+  }
+}
+
+// mergeFile("/Volumes/sidharth/sfdx-bfo/smallerset/splits/profiles/SE - SRV Advanced User Lightning.profile", "../", {});
 module.exports = mergeFile;

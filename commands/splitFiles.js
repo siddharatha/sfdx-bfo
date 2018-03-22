@@ -44,7 +44,7 @@ const colors = require("colors");
       const targetfolder = context.flags.targetfolder || "splits";
       const trueconfig = context.flags.trueconfig
         ? theBooleanValue(context.flags.trueconfig)
-        : true;
+        : false;
       const fileformat = context.flags.fileformat || "json";
       console.log(
         `Analyzing the folder structure to split \nTarget Folder is ${colors.green(
@@ -52,9 +52,9 @@ const colors = require("colors");
         )} \n ${
           trueconfig
             ? "Will generate only for " + colors.green("true") + " values"
-            : "Will generate both " +
+          : "Will generate both " + colors.green("true") +" and "+
               colors.red("false") +
-              ", be careful when you run on complete profile set"
+              " values. If you are running on complete profile set , it might take upto 2 hrs."
         } \nThe file format chosen is ${colors.yellow(fileformat)}`
       );
       prepareConfiguration().then(newconfig => {
@@ -157,9 +157,7 @@ function processConfig(eachConfig) {
 
 function processFile(eachfile, eachconfig) {
   return new Promise((resolve, reject) => {
-    splitFile(eachfile, eachconfig.targetfolder, eachconfig).then(() => {
-      bar.tick();
-      resolve();
+    splitFile(eachfile, eachconfig.targetfolder, eachconfig).then(() => {      resolve();
     });
   });
 }
