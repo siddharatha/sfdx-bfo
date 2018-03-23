@@ -1,8 +1,3 @@
-# todo
-
-* sfdx bfo:split -b false as default , always generate with false values. Specific guideline for release team to make sure they generate only true values when split and when merge.
-* clean up profiles, permissionsets, labels folders, do not clean up splits.
-
 # onboarding
 
 * install the salesforce cli https://developer.salesforce.com/tools/sfdxcli
@@ -23,12 +18,15 @@ sfdx plugins install sfdx-bfo
 
 ## Split files into a folder
 
-sfdx bfo:split -s yourfolderwitholdformat -t targetfolderfornewformat
+To generate only true values
+sfdx bfo:split -b true
+To generate true and false values
+sfdx bfo:split
 
 ## Merge files into a folder
 
-sfdx bfo:merge -s yourfolderwithsplitfiles -t targetfolderformergefiles
+sfdx bfo:merge
 
 ## doctor
 
-specifies the state of your repo
+work in progress
